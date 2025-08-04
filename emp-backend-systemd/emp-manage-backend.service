@@ -1,0 +1,33 @@
+[Unit]
+Description=Employee Manage Backend
+After=network.target
+
+[Service]
+Type=simple
+User=itadmin
+Group=itadmin
+
+WorkingDirectory=/opt/emp-manage/apps/emp-manage-backend
+ExecStart=/opt/emp-manage/env/emp-manage-backend/bin/gunicorn \
+    --workers 2 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:5000 \
+    --timeout 120 \
+    main:app
+
+Environment="PYTHONUNBUFFERED=1"
+
+StandardOutput=file:/var/log/emp-manage-backend/out.log
+StandardError=file:/var/log/emp-manage-backend/err.log
+
+Restart=on-failure
+RestartSec=5
+
+# -- Resource / security hardening --
+LimitNOFILE=4096
+PrivateTmp=true
+ProtectSystem=full
+#ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
